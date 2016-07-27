@@ -58,9 +58,9 @@ def main():
   response = requests.post(path, data=request_body)
 
   if response.status_code == 200:
-      print("200")
+      print("Successfully requesti, response data: {}".format(response.content))
   else:
-      print("error status code: {}".format(response.status_code))
+      print("Fail to request, status code: {}".format(response.status_code))
 
 if __name__ == '__main__':
   main()

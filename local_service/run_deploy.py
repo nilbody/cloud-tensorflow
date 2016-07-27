@@ -4,6 +4,7 @@ import tensorflow as tf
 import json
 import sys
 import os
+import shutil 
 
 from flask import Flask
 from flask import request
@@ -15,12 +16,8 @@ class InferenceService(object):
     def __init__(self, model, version, checkpoint_dir, graph_dir):
         self.model = model
         self.version = version
-        #self.checkpoint_dir = checkpoint_dir
-        self.checkpoint_dir = "./model/"
-        #self.checkpoint_dir = "/home/tobe/code/model-player/model/"
-        #self.meta_graph_file = graph_dir
-        self.meta_graph_file = "./model/linear_model.ckpt-100.meta"
-        #self.meta_graph_file = "/home/tobe/code/model-player/model/"
+        self.checkpoint_dir = checkpoint_dir
+        self.meta_graph_file = graph_dir
 
         self.sess = None
         self.inputs = None
@@ -60,8 +57,8 @@ class InferenceService(object):
         for key in self.inputs.keys():
             feed_dict[self.inputs[key]] = predict_sample[key]
         # TODO: this dict not works in docker container
-        #response = self.sess.run(self.outputs, feed_dict=feed_dict)
-        response = self.sess.run(self.outputs.values(), feed_dict=feed_dict)
+        response = self.sess.run(self.outputs, feed_dict=feed_dict)
+        #response = self.sess.run(self.outputs.values(), feed_dict=feed_dict)
         print("Response data: {}".format(response))
         return response
         
@@ -88,16 +85,26 @@ def main():
     return str(result)
 
 
-
 if __name__ == "__main__":
 
     model = sys.argv[1]
     version = sys.argv[2]
+    # source = "/tmp/mnist_160727_180616/model"
     source= sys.argv[3]
 
-    # TODO: move checkpoint to somewhere
-    checkpoint_dir = source
-    graph_dir = os.path.join(source, "graph.pb")
+    # /tmp/mnist/v7/
+    new_model_path = os.path.join("/tmp", model, version)
+    if os.path.exists(new_model_path):
+        print("The model {} with version {} exists, replce and run new model".format(model, version))    
+    else: 
+        os.makedirs(new_model_path)
+
+    for file in os.listdir(source):
+        shutil.copy(os.path.join(source, file), new_model_path) 
+
+    checkpoint_dir = new_model_path
+    #graph_dir = "/tmp/mnist_160727_180616/model/export-60100.meta"
+    graph_dir = os.path.join(checkpoint_dir, "export-60100.meta")
 
     global service
     service = InferenceService(model, version, checkpoint_dir, graph_dir)
