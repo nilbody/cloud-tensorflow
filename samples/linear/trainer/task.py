@@ -35,7 +35,7 @@ if args.job:
 else:
     model_dir = "/tmp/mnist_160727_153131/model"
 
-saver_path = os.path.join(model_dir, "export")
+checkpoint_path = os.path.join(model_dir, "export")
 
 train_X = np.linspace(-1, 1, 100)
 train_Y = 2 * train_X + np.random.randn(*train_X.shape) * 0.33 + 10
@@ -59,7 +59,7 @@ tf.add_to_collection("outputs", json.dumps({'key': keys.name, 'predict_op1': pre
 
 with tf.Session() as sess:
     sess.run(tf.initialize_all_variables())
-    tf.train.write_graph(sess.graph.as_graph_def(), "./", "linear_graph.pb", as_text=False)
+    tf.train.write_graph(sess.graph.as_graph_def(), model_dir, "graph.pb", as_text=False)
 
     #if FLAGS.mode == "train":
     if args.mode == "train":
@@ -68,11 +68,11 @@ with tf.Session() as sess:
                 _, epoch = sess.run([train_op, global_step], feed_dict={X: x, Y: y})
 
             if i % checkpoint_period == 0:
-                saver.save(sess, saver_path, global_step=epoch)
+                saver.save(sess, checkpoint_path, global_step=epoch)
                 print("Save checkpoint with global step: {}".format(epoch))
         
     elif args.mode == "predict":
-        #ckpt = tf.train.get_checkpoint_state(saver_path)
+        #ckpt = tf.train.get_checkpoint_state(checkpoint_path)
         ckpt = tf.train.get_checkpoint_state(model_dir)
         if ckpt and ckpt.model_checkpoint_path:
             saver.restore(sess, ckpt.model_checkpoint_path)

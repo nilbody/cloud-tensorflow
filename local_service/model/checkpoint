@@ -1,0 +1,2 @@
+model_checkpoint_path: "linear_model.ckpt-100-?????-of-00001"
+all_model_checkpoint_paths: "linear_model.ckpt-100-?????-of-00001"
