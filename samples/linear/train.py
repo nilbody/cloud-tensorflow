@@ -59,8 +59,8 @@ def train_on_cloud(job):
   subprocess.check_call(copy)
 
   # Request API to submmit job
-  print(job)
-  run_local_service_cmd = ['ls', '/tmp/']
+  print(json.dumps(job))
+  run_local_service_cmd = ['/tmp/cloud-tensorflow/local_service/run_train.sh', job['output_path'], TAR_FILE, json.dumps(job, indent=2)]
   mkdir_job = subprocess.Popen(run_local_service_cmd,)
   mkdir_job.wait()
 
