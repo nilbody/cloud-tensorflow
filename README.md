@@ -2,15 +2,15 @@
 
 [Cloud TensorFlow](https://github.com/tobegit3hub/cloud-tensorflow) is the scalable service to run [TensorFlow](https://github.com/tensorflow/tensorflow) in [Kubernetes](https://github.com/kubernetes/kubernetes) cloud platform.
 
-Now you can train TensorFlow models in container cluster with GPUs and deploy inference service with the [Google Cloud ML](://cloud.google.com/ml/)-like APIs.
+Now you can train TensorFlow models in container cluster with GPUs and deploy inference service with the [Google Cloud ML](https://cloud.google.com/ml/)-like APIs.
 
 ## Deployment
 
-If you are not familiar with Google Cloud ML, try local platform to know about processes of training and deploying.
+For quick start, highly recommend to use local platform which is easy to deploy.
 
-The Kubernetes platform is under development. It is highly relied on storage system and you can extend to need your requirements.
+The Kubernetes platform is under development. It is highly relied on storage and you can extend for your requirements.
 
-### Local Backend
+### Local Platform
 
 The scripts to train model and setup inference service are in [local_platform](./local_platform/). All you need is placing them in `/tmp`.
 
@@ -20,7 +20,7 @@ git clone https://github.com/tobegit3hub/cloud-tensorflow.git
 mv ./cloud-tensoflow/ /tmp/
 ```
 
-### Kubernetes Backend
+### Kubernetes Platform
 
 You need to setup [minikube](https://github.com/kubernetes/minikube) or Kubernetes cluster at first.
 
@@ -28,9 +28,9 @@ You need to setup [minikube](https://github.com/kubernetes/minikube) or Kubernet
 
 ### Prepare Data
 
-As the way to use TensorFlow, we can write Python script to train model. In order to run training in the cloud platform, we need extra scripts to submit training jobs and deploying models.
+As the way to use TensorFlow, we can write Python script to train model. In order to run training in the cloud platform, we need extra scripts to submit training and deploying jobs.
 
-The basic struct of code looks like this and you can find the complete example in [linear_regression](./samples/linear/regression/).
+The basic struct of code looks like this and you can find the complete example in [linear_regression](./samples/linear_regression/).
 
 ```
 ├── data
