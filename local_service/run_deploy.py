@@ -4,15 +4,15 @@ import tensorflow as tf
 import json
 import sys
 import os
-import shutil 
+import shutil
 
 from flask import Flask
 from flask import request
 
 app = Flask(__name__)
 
-class InferenceService(object):
 
+class InferenceService(object):
     def __init__(self, model, version, checkpoint_dir, graph_dir):
         self.model = model
         self.version = version
@@ -28,7 +28,7 @@ class InferenceService(object):
         self.sess.close()
 
     def load_model(self):
-        self.sess =  tf.Session()
+        self.sess = tf.Session()
 
         ckpt = tf.train.get_checkpoint_state(self.checkpoint_dir)
         if ckpt and ckpt.model_checkpoint_path:
@@ -46,7 +46,7 @@ class InferenceService(object):
                 # line = {'key': 1, 'X': 10.0, 'Y': 20.0}
                 predict_sample = json.loads(line)
                 result.append(self.process_request(predict_sample))
-        return result       
+        return result
 
     def process_request(self, predict_sample):
         # request_data = {'key': 1, 'X': 10.0, 'Y': 20.0}
@@ -61,13 +61,15 @@ class InferenceService(object):
         #response = self.sess.run(self.outputs.values(), feed_dict=feed_dict)
         print("Response data: {}".format(response))
         return response
-        
+
 
 service = None
+
 
 @app.route("/", methods=["GET"])
 def index():
     return "Test endpoint"
+
 
 @app.route("/", methods=["POST"])
 def main():
@@ -76,8 +78,8 @@ def main():
     #response =  service.process_json_file(json_file)
 
     data = json.loads(request.data)
-  
-    result = [] 
+
+    result = []
     for predict_sample in data:
         response = service.process_request(predict_sample)
         result.append(response)
@@ -90,17 +92,19 @@ if __name__ == "__main__":
     model = sys.argv[1]
     version = sys.argv[2]
     # source = "/tmp/mnist_160727_180616/model"
-    source= sys.argv[3]
+    source = sys.argv[3]
 
     # /tmp/mnist/v7/
     new_model_path = os.path.join("/tmp", model, version)
     if os.path.exists(new_model_path):
-        print("The model {} with version {} exists, replce and run new model".format(model, version))    
-    else: 
+        print(
+            "The model {} with version {} exists, replce and run new model".format(
+                model, version))
+    else:
         os.makedirs(new_model_path)
 
     for file in os.listdir(source):
-        shutil.copy(os.path.join(source, file), new_model_path) 
+        shutil.copy(os.path.join(source, file), new_model_path)
 
     checkpoint_dir = new_model_path
     #graph_dir = "/tmp/mnist_160727_180616/model/export-60100.meta"
@@ -110,4 +114,3 @@ if __name__ == "__main__":
     service = InferenceService(model, version, checkpoint_dir, graph_dir)
 
     app.run(host="0.0.0.0")
-
